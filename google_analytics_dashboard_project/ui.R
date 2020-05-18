@@ -15,18 +15,18 @@ ui <- fluidPage(
                  # adds keyword options in checkbox format
                  checkboxGroupInput("keyword", "Select Keywords",
                                     c("Analysis" = "analysis", "Analyst" = "analyst", "Codebase" = "codebase", 
-                                      "Code clan" = "code_clan", "CodeClan" = "codeclan", "Data" = "data", "
+                                      "Company" = "company", "Data" = "data", "
                                    Event" = "event", "Job" = "job", "Open Day" = "open_day","Podcast" = "podcast", 
                                       "Programming" = "programming", "Taster" = "taster"), 
-                                    selected = c("analysis", "analyst", "codebase", "code_clan", "codeclan", "data", 
+                                    selected = c("analysis", "analyst", "codebase", "company", "data", 
                                                  "event", "job", "open_day", "podcast", "programming", "taster")
                  ),
-                 checkboxGroupInput("advert", "Select Advert Type", 
-                                    c("Code Clan" = "codeclan_ad", "Coding" = "coding_ad", "Data" = "data_ad", 
-                                      "Developer" = "developer_ad","Programming" = "programming_ad","Software" = "software_ad",
-                                      "UX" = "ux_ad", "Web" = "web_ad"),
-                                    selected = c("codeclan_ad", "coding_ad", "data_ad", "developer_ad", "programming_ad",
-                                                 "software_ad", "ux_ad", "web_ad"))),
+                 checkboxGroupInput("advert", "Select Advert Content", 
+                                    c("Company" = "company", "Coding" = "coding", "Data" = "data", 
+                                      "Developer" = "developer","Programming" = "programming","Software" = "software",
+                                      "UX" = "ux", "Web" = "web"),
+                                    selected = c("company", "coding", "data", "developer", "programming",
+                                                 "software", "ux", "web"))),
                
                
                mainPanel(

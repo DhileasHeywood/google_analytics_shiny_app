@@ -40,11 +40,15 @@ server <- function(input, output) {
     output$advert_plot <- renderPlotly({
         
         plot3 <- ad_syn %>% 
-            filter(ad_type %in% input$advert) %>% 
-            mutate(ad_type = fct_reorder(ad_type, desc(count))) %>% 
+            filter(str_detect(adContent, fixed(input$advert))) %>% 
+            group_by(adContent) %>% 
+            summarise(count = n()) %>% 
+            arrange(desc(count)) %>% 
+            head(10) %>% 
+            mutate(adContent = fct_reorder(adContent, desc(count))) %>% 
             ggplot() +
-            geom_col(aes(x = ad_type, y = count)) +
-            labs(x = "Type of Advert",
+            geom_col(aes(x = adContent, y = count)) +
+            labs(x = "Content of Advert",
                  y = "Number of Clicks"
             ) +
             theme(axis.text.x = element_text(angle = 45, hjust = 1))
