@@ -15,4 +15,3 @@ goal_completion_syn <- read_csv("data/goal_completion_synthetic.csv")
 event_date_syn <- read_csv("data/event_date_synthetic.csv")
 
 sessions_and_exits_syn <- read_csv("data/sessions_exits_synthetic.csv")
-

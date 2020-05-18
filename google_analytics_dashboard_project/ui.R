@@ -59,7 +59,7 @@ ui <- fluidPage(
                           tags$h4("Search Engine Keywords")),
                    
                    column(6, 
-                          tags$h4("Most Popular Search Engines"))
+                          tags$h4("Arrivals by Search Engine"))
                  ),
                  
                  fluidRow(
@@ -73,10 +73,10 @@ ui <- fluidPage(
                  
                  fluidRow(
                    column(6,
-                          tags$h4("Clicks by Advert Type")),
+                          tags$h4("Arrivals by Advert Type")),
                    
                    column(6,
-                          tags$h4("Clicks by Social Media Company"))
+                          tags$h4("Arrivals by Social Media Company"))
                  ),
                  
                  fluidRow(

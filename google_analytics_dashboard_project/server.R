@@ -62,13 +62,13 @@ server <- function(input, output) {
     # tab 1, plot 4
     output$social_media_plot <- renderPlotly({
         plot4 <- clean_arrival_syn %>% 
-            dplyr::filter(str_detect(socialNetwork, "^(Twitter|LinkedIn|YouTube|Yammer|reddit|Quora|Instagram|Facebook|Glassdoor).*")) %>% 
-            group_by(socialNetwork) %>% 
+            dplyr::filter(str_detect(source, "^(twitter|linkedin|youtube|yammer|reddit|quora|instagram|facebook|glassdoor).*")) %>% 
+            group_by(source) %>% 
             summarise(number = n()) %>%
-            mutate(social_network = fct_reorder(socialNetwork, desc(number))) %>%
+            mutate(source = fct_reorder(source, desc(number))) %>%
             dplyr::filter(number > 1) %>% 
             ggplot() +
-            geom_col(aes(x = social_network, y = number)) +
+            geom_col(aes(x = source, y = number)) +
             labs(x = "Social Media Company",
                  y = "Number of Clicks"
             )
@@ -231,10 +231,11 @@ server <- function(input, output) {
     output$exit_rates_plot_1 <- renderPlotly({ 
         
         tab_3_plot1 <- sessions_and_exits_syn  %>% 
+            group_by(exit_page_path) %>% 
+            summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
             filter(exits > 1000) %>% 
-            mutate(exitPagePath = fct_reorder(exitPagePath, desc(exitRate))) %>% 
-            ggplot() +
-            aes(x = exitPagePath, y = exitRate) +
+            mutate(exit_page_path = fct_reorder(exit_page_path, desc(exit_rate))) %>% 
+            ggplot(aes(x = exit_page_path, y = exit_rate)) +
             geom_col() +
             theme(axis.text.x = element_blank()) +
             xlab("Exit Page") +
@@ -249,12 +250,13 @@ server <- function(input, output) {
     output$exit_rates_plot_1_1  <- renderPlot({
         
         sessions_and_exits_syn  %>% 
+            group_by(exit_page_path) %>% 
+            summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
             filter(exits > 1000) %>% 
-            mutate(exitPagePath = fct_reorder(exitPagePath, desc(exitRate))) %>% 
-            ggplot() +
-            aes(x = exitPagePath, y = exitRate) +
+            mutate(exit_page_path = fct_reorder(exit_page_path, desc(exit_rate))) %>% 
+            ggplot(aes(x = exit_page_path, y = exit_rate)) +
             geom_col() +
-            geom_text(aes(label = exitPagePath, y = 0), angle = 90, hjust = 0) +
+            geom_text(aes(label = exit_page_path, y = 0), angle = 90, hjust = 0) +
             theme(axis.text.x = element_blank()) +
             xlab("Exit Page") +
             ylab("Exit Rate") 
@@ -270,16 +272,19 @@ server <- function(input, output) {
     output$page_depth_plot_1 <- renderPlotly({ 
         
         tab_3_plot2 <- sessions_and_exits_syn  %>% 
+            group_by(exit_page_path, page_depth) %>% 
+            summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
+            ungroup() %>%
             filter(exits > 600) %>%
-            filter(!is.na(visits)) %>% 
-            mutate(visits = factor(visits, levels = c("3", "2", "1")),
-                   exitPagePath = fct_reorder(exitPagePath, desc(exits), .fun = sum)) %>% 
-            ggplot(aes(x = exitPagePath, y = exits, fill = visits)) +
+            filter(!is.na(page_depth)) %>% 
+            mutate(page_depth = factor(page_depth, levels = seq(from = max(page_depth), to = 1, by = -1)),
+                   exit_page_path = fct_reorder(exit_page_path, desc(exits), .fun = sum)) %>% 
+            ggplot(aes(x = exit_page_path, y = exits, fill = page_depth)) +
             geom_col() +
             theme(axis.text.x = element_blank()) +
             xlab("Exit Page") +
             ylab("Exits") +
-            scale_fill_manual(values = c("1" = "#0C2533", "2" = "#073E5D", "3" = "#4C768E"))
+            scale_fill_viridis_d()
         
         ggplotly(tab_3_plot2)
         
@@ -290,17 +295,20 @@ server <- function(input, output) {
     output$page_depth_plot_1_1  <- renderPlot({
         
         sessions_and_exits_syn  %>% 
+            group_by(exit_page_path, page_depth) %>% 
+            summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
+            ungroup() %>% 
             filter(exits > 600) %>%
-            filter(!is.na(visits)) %>% 
-            mutate(visits = factor(visits, levels = c("3", "2", "1")),
-                   exitPagePath = fct_reorder(exitPagePath, desc(exits), .fun = sum)) %>%
-            ggplot(aes(x = exitPagePath, y = exits, fill = visits)) +
+            filter(!is.na(page_depth)) %>% 
+            mutate(page_depth = factor(page_depth, levels = seq(from = max(page_depth), to = 1, by = -1)),
+                   exit_page_path = fct_reorder(exit_page_path, desc(exits), .fun = sum)) %>%
+            ggplot(aes(x = exit_page_path, y = exits, fill = page_depth)) +
             geom_col() +
-            geom_text(aes(label = exitPagePath, y = 0), angle = 90, hjust = 0, colour = "#808080") +
+            geom_text(aes(label = exit_page_path, y = 0), angle = 90, hjust = 0, colour = "#3b3b3b") +
             theme(axis.text.x = element_blank()) +
             xlab("Exit Page") +
             ylab("Exits") +
-            scale_fill_manual(values = c("1" = "#0C2533", "2" = "#073E5D", "3" = "#4C768E"))  
+            scale_fill_viridis_d()
         
     })
     
@@ -310,10 +318,13 @@ server <- function(input, output) {
     # --  
     output$sessions_and_exits_plot_1 <- renderPlotly({ 
         
-        tab_3_plot3 <- sessions_and_exits_syn %>% 
-            mutate(exitPagePath = fct_reorder(exitPagePath, desc(avgSessionDuration))) %>%
+        tab_3_plot3 <- sessions_and_exits_syn  %>% 
+            group_by(exit_page_path) %>% 
+            summarise(avg_session_duration = mean(avg_session_duration)) %>% 
+            arrange(desc(avg_session_duration)) %>% 
+            mutate(exit_page_path = fct_reorder(exit_page_path, desc(avg_session_duration))) %>%
             ggplot() +
-            aes(x = exitPagePath , y = avgSessionDuration) +
+            aes(x = exit_page_path , y = avg_session_duration) +
             geom_col() +
             theme(axis.text.x = element_blank()) +
             xlab("Exit Page") +
@@ -327,10 +338,13 @@ server <- function(input, output) {
     output$sessions_and_exits_plot_1_1  <- renderPlot({
         
         sessions_and_exits_syn  %>% 
-            mutate(exitPagePath = fct_reorder(exitPagePath, desc(avgSessionDuration))) %>%
-            ggplot(aes(x = exitPagePath , y = avgSessionDuration)) +
+            group_by(exit_page_path) %>% 
+            summarise(avg_session_duration = mean(avg_session_duration)) %>% 
+            arrange(desc(avg_session_duration)) %>% 
+            mutate(exit_page_path = fct_reorder(exit_page_path, desc(avg_session_duration))) %>%
+            ggplot(aes(x = exit_page_path , y = avg_session_duration)) +
             geom_col() +
-            geom_text(aes(label = exitPagePath, y = 0), angle = 90, hjust = 0) +
+            geom_text(aes(label = exit_page_path, y = 0), angle = 90, hjust = 0) +
             theme(axis.text.x = element_blank()) +
             xlab("Exit Page") +
             ylab("Time in Seconds")
