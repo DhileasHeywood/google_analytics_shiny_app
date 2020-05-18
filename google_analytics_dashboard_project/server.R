@@ -1,9 +1,38 @@
 server <- function(input, output) {
     
+    
+    
+    # Reactive data for tab 1 plot 1
+    
+    date_filtered_keyword_syn <- reactive({
+        
+        keyword_syn %>% 
+            filter(date >= input$date_range[1], date <= input$date_range[2])
+        
+    })
+    
+    # Reactive data for tab 1 plots 2, 4
+    date_filtered_arrival_syn <- reactive({
+        
+        clean_arrival_syn %>% 
+            filter(date >= input$date_range[1], date <= input$date_range[2])
+    }) 
+    
+    
+    # Reactive data for tab 1 plot 3
+    
+    date_filtered_ad_syn <- reactive({
+        
+        ad_syn %>% 
+            filter(date >= input$date_range[1], date <= input$date_range[2])
+        
+    })
+    
+    
     # tab 1, plot 1
     output$keyword_plot <- renderPlotly({
         
-        plot1 <- keyword_syn %>%  
+        plot1 <- date_filtered_keyword_syn() %>%  
             filter(str_detect(keyword, fixed(input$keyword))) %>% 
             group_by(keyword) %>% 
             summarise(count = n()) %>% 
@@ -21,7 +50,7 @@ server <- function(input, output) {
     # tab 1, plot 2
     output$search_engine_plot <- renderPlotly({
         
-        plot2 <- clean_arrival_syn %>% 
+        plot2 <- date_filtered_arrival_syn() %>% 
             dplyr::filter(str_detect(source, "^(google|bing|baidu|ecosia|duckduckgo|yahoo|zapmeta|yandex|izi).*")) %>% 
             group_by(source) %>% 
             summarise(n = n()) %>% 
@@ -41,7 +70,7 @@ server <- function(input, output) {
     # tab 1, plot 3
     output$advert_plot <- renderPlotly({
         
-        plot3 <- ad_syn %>% 
+        plot3 <- date_filtered_ad_syn() %>% 
             filter(str_detect(adContent, fixed(input$advert))) %>% 
             group_by(adContent) %>% 
             summarise(count = n()) %>% 
@@ -61,7 +90,7 @@ server <- function(input, output) {
     
     # tab 1, plot 4
     output$social_media_plot <- renderPlotly({
-        plot4 <- clean_arrival_syn %>% 
+        plot4 <- date_filtered_arrival_syn() %>% 
             dplyr::filter(str_detect(source, "^(twitter|linkedin|youtube|yammer|reddit|quora|instagram|facebook|glassdoor).*")) %>% 
             group_by(source) %>% 
             summarise(number = n()) %>%
@@ -225,12 +254,23 @@ server <- function(input, output) {
     })
     
     
+    
+    # Reactive data for tab 3 plots 1, 2, 3
+    date_filtered_sessions_and_exits_syn <- reactive({
+        
+        sessions_and_exits_syn %>% 
+            filter(date >= input$date_range[1], date <= input$date_range[2])
+    }) 
+    
+    
+    
+    
     # --  
     # tab 3 plot 1
     # --
     output$exit_rates_plot_1 <- renderPlotly({ 
         
-        tab_3_plot1 <- sessions_and_exits_syn  %>% 
+        tab_3_plot1 <- date_filtered_sessions_and_exits_syn()  %>% 
             group_by(exit_page_path) %>% 
             summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
             filter(exits > 1000) %>% 
@@ -249,7 +289,7 @@ server <- function(input, output) {
     # tab 3 plot 1 printer friendly
     output$exit_rates_plot_1_1  <- renderPlot({
         
-        sessions_and_exits_syn  %>% 
+        date_filtered_sessions_and_exits_syn()  %>% 
             group_by(exit_page_path) %>% 
             summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
             filter(exits > 1000) %>% 
@@ -271,7 +311,7 @@ server <- function(input, output) {
     # --  
     output$page_depth_plot_1 <- renderPlotly({ 
         
-        tab_3_plot2 <- sessions_and_exits_syn  %>% 
+        tab_3_plot2 <- date_filtered_sessions_and_exits_syn()  %>% 
             group_by(exit_page_path, page_depth) %>% 
             summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
             ungroup() %>%
@@ -294,7 +334,7 @@ server <- function(input, output) {
     # tab 3 plot 2 printer friendly
     output$page_depth_plot_1_1  <- renderPlot({
         
-        sessions_and_exits_syn  %>% 
+        date_filtered_sessions_and_exits_syn()  %>% 
             group_by(exit_page_path, page_depth) %>% 
             summarise(exits = sum(exits), exit_rate = mean(exit_rate)) %>% 
             ungroup() %>% 
@@ -318,7 +358,7 @@ server <- function(input, output) {
     # --  
     output$sessions_and_exits_plot_1 <- renderPlotly({ 
         
-        tab_3_plot3 <- sessions_and_exits_syn  %>% 
+        tab_3_plot3 <- date_filtered_sessions_and_exits_syn()  %>% 
             group_by(exit_page_path) %>% 
             summarise(avg_session_duration = mean(avg_session_duration)) %>% 
             arrange(desc(avg_session_duration)) %>% 
@@ -337,7 +377,7 @@ server <- function(input, output) {
     # tab 3 plot 3 printer friendly
     output$sessions_and_exits_plot_1_1  <- renderPlot({
         
-        sessions_and_exits_syn  %>% 
+        date_filtered_sessions_and_exits_syn()  %>% 
             group_by(exit_page_path) %>% 
             summarise(avg_session_duration = mean(avg_session_duration)) %>% 
             arrange(desc(avg_session_duration)) %>% 
