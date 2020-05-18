@@ -4,7 +4,9 @@ server <- function(input, output) {
     output$keyword_plot <- renderPlotly({
         
         plot1 <- keyword_syn %>%  
-            filter(keyword %in% input$keyword) %>% 
+            filter(str_detect(keyword, fixed(input$keyword))) %>% 
+            group_by(keyword) %>% 
+            summarise(count = n()) %>% 
             mutate(keyword = fct_reorder(keyword, desc(count))) %>% 
             ggplot() +
             geom_col(aes(x = keyword, y = count)) +

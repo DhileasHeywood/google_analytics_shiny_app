@@ -14,19 +14,42 @@ ui <- fluidPage(
                  tags$h5("Select an area of a graph to zoom in. Double click to reset."),
                  # adds keyword options in checkbox format
                  checkboxGroupInput("keyword", "Select Keywords",
-                                    c("Analysis" = "analysis", "Analyst" = "analyst", "Codebase" = "codebase", 
-                                      "Company" = "company", "Data" = "data", "
-                                   Event" = "event", "Job" = "job", "Open Day" = "open_day","Podcast" = "podcast", 
-                                      "Programming" = "programming", "Taster" = "taster"), 
-                                    selected = c("analysis", "analyst", "codebase", "company", "data", 
-                                                 "event", "job", "open_day", "podcast", "programming", "taster")
+                                    c("Company" = "company", 
+                                      "Data" = "data", 
+                                      "Event" = "event", 
+                                      "Job" = "job", 
+                                      "Podcast" = "podcast", 
+                                      "Programming" = "programming", 
+                                      "Taster" = "taster"), 
+                                    selected = c("company", 
+                                                 "data", 
+                                                 "event", 
+                                                 "job", 
+                                                 "podcast", 
+                                                 "programming", 
+                                                 "taster")
                  ),
+                 
                  checkboxGroupInput("advert", "Select Advert Content", 
-                                    c("Company" = "company", "Coding" = "coding", "Data" = "data", 
-                                      "Developer" = "developer","Programming" = "programming","Software" = "software",
-                                      "UX" = "ux", "Web" = "web"),
-                                    selected = c("company", "coding", "data", "developer", "programming",
-                                                 "software", "ux", "web"))),
+                                    c("Company" = "company", 
+                                      "Coding" = "coding", 
+                                      "Data" = "data", 
+                                      "Developer" = "developer",
+                                      "Programming" = "programming",
+                                      "Software" = "software",
+                                      "UX" = "ux", 
+                                      "Web" = "web"),
+                                    selected = c("company", 
+                                                 "coding", 
+                                                 "data", 
+                                                 "developer", 
+                                                 "programming",
+                                                 "software", 
+                                                 "ux", 
+                                                 "web")
+                                    )
+                 
+               ),
                
                
                mainPanel(
